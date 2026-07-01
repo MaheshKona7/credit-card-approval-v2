@@ -36,9 +36,24 @@
                     <i class="fa-solid fa-circle-xmark"></i>
                 </div>
                 <div class="result-badge rejected">REJECTED</div>
+                {% if details.policy_reject %}
+                <div style="background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.3); border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 1rem; text-align: left;">
+                    <p style="margin: 0 0 0.35rem; font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--error-color);">
+                        <i class="fa-solid fa-shield-exclamation"></i>&nbsp; Policy Decision
+                    </p>
+                    <p style="margin: 0; font-size: 0.88rem; color: var(--text-secondary); line-height: 1.5;">
+                        {{ details.policy_reason }}
+                    </p>
+                </div>
+                <p class="result-message">
+                    This application was automatically declined by our underwriting policy engine before reaching the ML model.
+                    The profile does not meet the <strong>minimum eligibility criteria</strong>.
+                </p>
+                {% else %}
                 <p class="result-message">
                     The evaluation indicates a high credit risk profile due to income, stability or debt metrics. The application has been flagged for <strong>further manual review</strong>.
                 </p>
+                {% endif %}
             {% endif %}
 
             <!-- Submitted Details Summary -->
