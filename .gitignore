@@ -1,0 +1,4 @@
+credit_model.pkl
+venv/
+__pycache__/
+*.pyc
