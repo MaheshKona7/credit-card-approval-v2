@@ -1,4 +1,9 @@
-credit_model.pkl
+# Exclude large raw datasets
+application_record.csv
+credit_record.csv
+dataset.csv
+
+# Exclude virtual env and compiled python files
 venv/
 __pycache__/
 *.pyc

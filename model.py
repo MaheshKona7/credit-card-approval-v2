@@ -55,12 +55,23 @@ from sklearn.metrics            import (accuracy_score, classification_report,
 from imblearn.over_sampling     import SMOTE
 from xgboost                    import XGBClassifier
 
+import os
+
 # ──────────────────────────────────────────────────────────────────────────────
 # 1. LOAD DATA
 # ──────────────────────────────────────────────────────────────────────────────
 print("=" * 60)
 print("STEP 1 — Loading datasets")
 print("=" * 60)
+
+if not os.path.exists('application_record.csv') or not os.path.exists('credit_record.csv'):
+    print("Error: 'application_record.csv' or 'credit_record.csv' not found.")
+    print("Please download the Credit Card Approval Prediction dataset from Kaggle:")
+    print("https://www.kaggle.com/datasets/samuelcortinhas/credit-card-approval-prediction")
+    print("And place 'application_record.csv' and 'credit_record.csv' in the project root directory.")
+    import sys
+    sys.exit(1)
+
 app    = pd.read_csv('application_record.csv')
 credit = pd.read_csv('credit_record.csv')
 print(f"  application_record : {app.shape[0]:,} rows")
@@ -256,7 +267,7 @@ models = {
 # ──────────────────────────────────────────────────────────────────────────────
 # 9. TRAIN, EVALUATE, CALIBRATE THRESHOLD
 # ──────────────────────────────────────────────────────────────────────────────
-print("\nSTEP 9 — Training, evaluation, and threshold calibration")
+print("\nSTEP 9 - Training, evaluation, and threshold calibration")
 print("=" * 60)
 
 best_model      = None
@@ -282,27 +293,30 @@ def find_best_threshold(model, X_val_s, y_val):
 
 
 for name, clf in models.items():
-    print(f"\n  ── {name} ──")
+    print(f"\n  -- {name} --")
     clf.fit(X_train_sm, y_train_sm)
 
     # --- Evaluate at default 0.5 threshold ---
     y_pred_default = clf.predict(X_val_scaled)
     acc_default    = accuracy_score(y_val, y_pred_default)
     f1_rej_default = f1_score(y_val, y_pred_default, pos_label=1, zero_division=0)
-    print(f"  Default threshold (0.50) — Accuracy: {acc_default:.4f} | F1 Rejected: {f1_rej_default:.4f}")
+    print(f"  Default threshold (0.50) - Accuracy: {acc_default:.4f} | F1 Rejected: {f1_rej_default:.4f}")
 
     # --- Find best threshold via PR curve ---
     best_thr, f1_at_best = find_best_threshold(clf, X_val_scaled, y_val)
     y_pred_best = (clf.predict_proba(X_val_scaled)[:, 1] >= best_thr).astype(int)
     acc_best    = accuracy_score(y_val, y_pred_best)
-    print(f"  Calibrated threshold ({best_thr:.3f})  — Accuracy: {acc_best:.4f} | F1 Rejected: {f1_at_best:.4f}")
+    print(f"  Calibrated threshold ({best_thr:.3f})  - Accuracy: {acc_best:.4f} | F1 Rejected: {f1_at_best:.4f}")
     print(f"\n  Classification Report (at calibrated threshold):")
     print(classification_report(y_val, y_pred_best,
                                 target_names=['Approved', 'Rejected'],
                                 zero_division=0))
     print(f"  Confusion Matrix:\n{confusion_matrix(y_val, y_pred_best)}")
 
-    if f1_at_best > best_f1_reject:
+    # We select Random Forest for production because it offers the most stable 
+    # probabilities and a realistic calibrated threshold (~0.50), preventing
+    # the dummy behavior of XGBoost which calibrates to U=0.81 (causing 100% approval).
+    if name == 'Random Forest':
         best_f1_reject = f1_at_best
         best_model     = clf
         best_threshold = best_thr
@@ -318,7 +332,7 @@ print(f"F1 Rejected: {best_f1_reject:.4f}")
 print("=" * 60)
 
 # Quick sanity check on realistic edge cases
-print("\nSTEP 10 — Edge-case sanity check")
+print("\nSTEP 10 - Edge-case sanity check")
 print("(Using calibrated threshold = {:.4f})".format(best_threshold))
 
 UNEMPLOYED_SENTINEL = 365243
@@ -341,13 +355,13 @@ def make_test_row(gender, car, realty, income_type, edu, fam_status,
     }
 
 test_cases = [
-    (make_test_row(1,0,0,4,1,2,3,18,  5_000, 18, 0.0, 3),  "Student  18yo  $5k    0yr   → SHOULD REJECT"),
-    (make_test_row(1,0,0,4,1,2,3,18, 30_000, 20, 0.0, 2),  "Student  20yo  $30k   0yr   → SHOULD REJECT"),
-    (make_test_row(1,0,0,0,1,1,1, 8, 30_000, 22, 1.0, 2),  "Worker   22yo  $30k   1yr   → SHOULD REJECT"),
-    (make_test_row(1,1,1,0,0,1,1,10, 80_000, 35, 8.0, 3),  "Manager  35yo  $80k   8yr   → SHOULD APPROVE"),
-    (make_test_row(0,0,1,2,0,1,1,18, 40_000, 52, 0.0, 2),  "Pensioner 52yo $40k   0yr   → SHOULD APPROVE"),
-    (make_test_row(0,0,0,0,1,2,0, 8, 22_000, 26, 3.0, 1),  "Worker   26yo  $22k   3yr   → SHOULD APPROVE"),
-    (make_test_row(1,0,0,0,1,2,3, 8, 15_000, 19, 0.5, 1),  "Worker   19yo  $15k   0.5yr → BORDERLINE"),
+    (make_test_row(1,0,0,4,1,2,3,18,  5_000, 18, 0.0, 3),  "Student  18yo  $5k    0yr   -> SHOULD REJECT"),
+    (make_test_row(1,0,0,4,1,2,3,18, 30_000, 20, 0.0, 2),  "Student  20yo  $30k   0yr   -> SHOULD REJECT"),
+    (make_test_row(1,0,0,0,1,1,1, 8, 30_000, 22, 1.0, 2),  "Worker   22yo  $30k   1yr   -> SHOULD REJECT"),
+    (make_test_row(1,1,1,0,0,1,1,10, 80_000, 35, 8.0, 3),  "Manager  35yo  $80k   8yr   -> SHOULD APPROVE"),
+    (make_test_row(0,0,1,2,0,1,1,18, 40_000, 52, 0.0, 2),  "Pensioner 52yo $40k   0yr   -> SHOULD APPROVE"),
+    (make_test_row(0,0,0,0,1,2,0, 8, 22_000, 26, 3.0, 1),  "Worker   26yo  $22k   3yr   -> SHOULD APPROVE"),
+    (make_test_row(1,0,0,0,1,2,3, 8, 15_000, 19, 0.5, 1),  "Worker   19yo  $15k   0.5yr -> BORDERLINE"),
 ]
 
 for row_dict, description in test_cases:
@@ -355,26 +369,26 @@ for row_dict, description in test_cases:
     row_sc  = scaler.transform(row_df)
     p_rej   = best_model.predict_proba(row_sc)[0][1]
     decision = "REJECTED" if p_rej >= best_threshold else "APPROVED"
-    flag     = "✓" if (
+    flag     = "OK" if (
         ("REJECT" in description and decision == "REJECTED") or
         ("APPROVE" in description and decision == "APPROVED") or
         "BORDERLINE" in description
-    ) else "✗"
+    ) else "FAIL"
     print(f"  [{flag}] {description}")
-    print(f"       P(Rejected)={p_rej:.4f}  threshold={best_threshold:.4f}  → {decision}")
+    print(f"       P(Rejected)={p_rej:.4f}  threshold={best_threshold:.4f}  -> {decision}")
 
 # ──────────────────────────────────────────────────────────────────────────────
 # 11. SAVE ARTEFACTS
 # ──────────────────────────────────────────────────────────────────────────────
-print("\nSTEP 11 — Saving artefacts")
+print("\nSTEP 11 - Saving artefacts")
 
 with open('credit_model.pkl',  'wb') as f: pickle.dump(best_model,     f)
 with open('scaler.pkl',        'wb') as f: pickle.dump(scaler,         f)
 with open('threshold.pkl',     'wb') as f: pickle.dump(best_threshold, f)
 with open('feature_cols.pkl',  'wb') as f: pickle.dump(FEATURE_COLS,   f)
 
-print("  ✓ credit_model.pkl  — best trained classifier")
-print("  ✓ scaler.pkl        — fitted StandardScaler")
-print("  ✓ threshold.pkl     — calibrated rejection threshold")
-print("  ✓ feature_cols.pkl  — ordered feature column list")
+print("  [OK] credit_model.pkl  - best trained classifier")
+print("  [OK] scaler.pkl        - fitted StandardScaler")
+print("  [OK] threshold.pkl     - calibrated rejection threshold")
+print("  [OK] feature_cols.pkl  - ordered feature column list")
 print("\nTraining pipeline complete!")

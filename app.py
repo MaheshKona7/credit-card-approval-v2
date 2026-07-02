@@ -1,21 +1,21 @@
 from flask import Flask, render_template, request
 import pickle
 import numpy as np
+import pandas as pd
 
 app = Flask(__name__)
 
-# Load the best-performing credit card approval model
+# Load the trained model, scaler, and calibrated threshold
 with open('credit_model.pkl', 'rb') as f:
     model = pickle.load(f)
 
-# ---------------------------------------------------------------------------
-# Decision threshold for the ML model's rejection class.
-# The dataset is heavily imbalanced (~88% Approved vs ~12% Rejected), so the
-# model's raw output skews strongly toward approval. We lower this threshold
-# below the default 0.5 to catch more true rejections.
-# If P(Rejected) >= REJECTION_THRESHOLD → predict Rejected.
-# ---------------------------------------------------------------------------
-REJECTION_THRESHOLD = 0.40
+with open('scaler.pkl', 'rb') as f:
+    scaler = pickle.load(f)
+
+with open('threshold.pkl', 'rb') as f:
+    REJECTION_THRESHOLD = pickle.load(f)
+
+print(f"Loaded model. Calibrated Rejection Threshold: {REJECTION_THRESHOLD:.4f}")
 
 # ---------------------------------------------------------------------------
 # Income type encoding (must match the label-encoder used during training):
@@ -122,34 +122,33 @@ def predict():
             prob_rejected = 100.0
         else:
             # ── Layer 2: ML model scoring ─────────────────────────────────────
-            # Convert Age (years) → DAYS_BIRTH (negative days, as in training data)
-            days_birth = int(-age * 365.25)
-
-            # Convert Employment (years) → DAYS_EMPLOYED
-            # Unemployed / not-applicable applicants use sentinel value 365243
-            # (this is the value present in the original Kaggle dataset).
-            if employment_years == 0:
-                days_employed = 365243
-            else:
-                days_employed = int(-employment_years * 365.25)
+            # Perform exact feature engineering matching model.py:
+            age_years = float(age)
+            is_employed = 1 if employment_years > 0 else 0
+            emp_years = float(employment_years)
+            income_per_member = annual_income / max(family_members, 1)
+            employment_ratio = emp_years / max(age_years, 1)
 
             # Feature order must exactly match the training pipeline:
-            # CODE_GENDER, FLAG_OWN_CAR, FLAG_OWN_REALTY, NAME_INCOME_TYPE,
-            # NAME_EDUCATION_TYPE, NAME_FAMILY_STATUS, NAME_HOUSING_TYPE,
-            # OCCUPATION_TYPE, AMT_INCOME_TOTAL, DAYS_BIRTH, DAYS_EMPLOYED,
-            # CNT_FAM_MEMBERS
-            features = np.array([[
+            features = pd.DataFrame([[
                 gender, own_car, own_realty, income_type,
                 education, family_status, housing_type,
-                occupation, annual_income, days_birth,
-                days_employed, family_members
-            ]])
+                occupation, annual_income, family_members,
+                age_years, is_employed, emp_years,
+                income_per_member, employment_ratio
+            ]], columns=[
+                'CODE_GENDER', 'FLAG_OWN_CAR', 'FLAG_OWN_REALTY', 'NAME_INCOME_TYPE',
+                'NAME_EDUCATION_TYPE', 'NAME_FAMILY_STATUS', 'NAME_HOUSING_TYPE',
+                'OCCUPATION_TYPE', 'AMT_INCOME_TOTAL', 'CNT_FAM_MEMBERS',
+                'AGE_YEARS', 'IS_EMPLOYED', 'EMPLOYMENT_YEARS',
+                'INCOME_PER_MEMBER', 'EMPLOYMENT_RATIO'
+            ])
 
-            # predict_proba gives soft probabilities; we apply our own threshold
-            # instead of using model.predict()'s hard 0.5 cutoff, which over-
-            # approves on this imbalanced dataset.
-            # proba[0] = P(Approved/Good client), proba[1] = P(Rejected/Bad client)
-            proba         = model.predict_proba(features)[0]
+            # Apply StandardScaler used during training
+            features_scaled = scaler.transform(features)
+
+            # Get soft probabilities
+            proba         = model.predict_proba(features_scaled)[0]
             prob_approved = proba[0]
             prob_rejected = proba[1]
 
