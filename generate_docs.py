@@ -17,10 +17,9 @@ ACADEMIC_YEAR = "2023-2027"
 BATCH = "AI-ML Internship"
 TEAM_MEMBERS = [
     "K. Mahesh (Team Leader)",
-    "P. Ramesh (Member 2)",
-    "S. Suresh (Member 3)",
-    "V. Dinesh (Member 4)",
-    "M. Naresh (Member 5)"
+    "K. Kusuma (Member 2)",
+    "I. Phanindra (Member 3)",
+    "I. Srujan (Member 4)"
 ]
 GUIDE = "Dr. K. Srinivas Rao (Faculty Name)"
 CURRENT_DATE = "02 July 2026"
@@ -263,10 +262,10 @@ def build_phase1():
             [
                 ["S.No", "Team Member", "Idea / Suggestion", "Category", "Group No."],
                 ["1", "K. Mahesh", "Layered policy-based rules engine overrides filters", "Rules Engine", "Group 1"],
-                ["2", "P. Ramesh", "SMOTE over-sampling pipeline to balance default distribution", "Data Sampling", "Group 2"],
-                ["3", "S. Suresh", "Standard feature scaling pipeline for variable equivalence", "Preprocessing", "Group 3"],
-                ["4", "V. Dinesh", "Probability threshold calibration using Precision-Recall curve", "Model Tuning", "Group 4"],
-                ["5", "M. Naresh", "Real-time Flask underwriting outcomes dashboard", "UI Dashboard", "Group 5"],
+                ["2", "K. Kusuma", "SMOTE over-sampling pipeline to balance default distribution", "Data Sampling", "Group 2"],
+                ["3", "I. Phanindra", "Standard feature scaling pipeline for variable equivalence", "Preprocessing", "Group 3"],
+                ["4", "I. Srujan", "Probability threshold calibration using Precision-Recall curve", "Model Tuning", "Group 4"],
+                ["5", "I. Srujan", "Real-time Flask underwriting outcomes dashboard", "UI Dashboard", "Group 5"],
                 ["6", "K. Mahesh", "Local scikit-learn model fallback to bypass computer policy blocks", "Compliance", "Group 6"]
             ],
             [30, 90, 240, 110, 70]
@@ -582,12 +581,12 @@ def build_phase4():
             [
                 ["Sprint", "Epic / Feature", "Story ID", "User Story / Task Description", "Points", "Priority", "Assigned", "Start Date", "End Date"],
                 ["Sprint-1", "Data Integration", "USN-1", "Ingest demographic & payment CSVs, join on ID, label targets.", "3", "High", "Leader", "15-Mar", "20-Mar"],
-                ["Sprint-1", "Model Training", "USN-2", "Balance the default class (88:12 ratio) using SMOTE.", "5", "High", "Ramesh", "15-Mar", "20-Mar"],
-                ["Sprint-1", "Model Training", "USN-3", "Train RF, LR, and Decision Tree; serialize best RF binary.", "5", "High", "Ramesh", "15-Mar", "20-Mar"],
-                ["Sprint-1", "Model Training", "USN-4", "Sweep Precision-Recall curve to calibrate rejection threshold.", "3", "High", "Suresh", "15-Mar", "20-Mar"],
+                ["Sprint-1", "Model Training", "USN-2", "Balance the default class (88:12 ratio) using SMOTE.", "5", "High", "Kusuma", "15-Mar", "20-Mar"],
+                ["Sprint-1", "Model Training", "USN-3", "Train RF, LR, and Decision Tree; serialize best RF binary.", "5", "High", "Kusuma", "15-Mar", "20-Mar"],
+                ["Sprint-1", "Model Training", "USN-4", "Sweep Precision-Recall curve to calibrate rejection threshold.", "3", "High", "Phanindra", "15-Mar", "20-Mar"],
                 ["Sprint-2", "Policy Engine", "USN-5", "Implement 4 policy filters in app.py to reject basic risks.", "2", "High", "Leader", "21-Mar", "26-Mar"],
-                ["Sprint-2", "Web Dashboard", "USN-6", "Build input form (home.html) and outcomes panel (result.html).", "5", "High", "Dinesh", "21-Mar", "26-Mar"],
-                ["Sprint-2", "Deployment", "USN-7", "Configure repository structure and host application on Render.", "3", "Medium", "Naresh", "21-Mar", "26-Mar"]
+                ["Sprint-2", "Web Dashboard", "USN-6", "Build input form (home.html) and outcomes panel (result.html).", "5", "High", "Srujan", "21-Mar", "26-Mar"],
+                ["Sprint-2", "Deployment", "USN-7", "Configure repository structure and host application on Render.", "3", "Medium", "Srujan", "21-Mar", "26-Mar"]
             ],
             [45, 75, 45, 175, 30, 45, 45, 40, 40]
         )
@@ -1126,10 +1125,10 @@ def build_phase8():
             [
                 ["S.No", "Demo Section", "Description", "Duration (mins)", "Responsible Member"],
                 ["1", "Introduction & Problem", "Outline operational bottlenecks, credit NPA risks, and project objectives.", "2 mins", "K. Mahesh (Leader)"],
-                ["2", "System Architecture", "Explain the hybrid decisioning pipeline (Policy Layer 1 and ML Layer 2).", "2 mins", "P. Ramesh"],
-                ["3", "Model Optimization", "Discuss Stratified Join ETL, SMOTE balancing, and PR calibration.", "3 mins", "S. Suresh"],
-                ["4", "Live Feature Demo", "Run Scenario A (Low-Income), B (Student), and C (Approved manager).", "5 mins", "V. Dinesh"],
-                ["5", "Testing & Deployment", "Review automated unit test logs and Render hosting setup.", "2 mins", "M. Naresh"],
+                ["2", "System Architecture", "Explain the hybrid decisioning pipeline (Policy Layer 1 and ML Layer 2).", "2 mins", "K. Kusuma"],
+                ["3", "Model Optimization", "Discuss Stratified Join ETL, SMOTE balancing, and PR calibration.", "3 mins", "I. Phanindra"],
+                ["4", "Live Feature Demo", "Run Scenario A (Low-Income), B (Student), and C (Approved manager).", "5 mins", "I. Srujan"],
+                ["5", "Testing & Deployment", "Review automated unit test logs and Render hosting setup.", "2 mins", "K. Mahesh (Leader)"],
                 ["6", "Q&A Session", "Respond to stakeholder inquiries and discuss future roadmap.", "3 mins", "All Team Members"]
             ],
             [30, 120, 210, 80, 100]
@@ -1195,11 +1194,10 @@ def build_phase8():
         make_pdf_table(
             [
                 ["S.No", "Team Member Name", "Role in Demo", "Section Presented", "Contribution Summary", "Participation (Active / Passive)"],
-                ["1", TEAM_MEMBERS[0], "Team Leader", "Introduction, Objectives, WBS, Policy override rules", "Coordinated team sprint tasks, built backend policy code, presented intro.", "Active"],
+                ["1", TEAM_MEMBERS[0], "Team Leader", "Introduction, Objectives, WBS, Policy override rules, QA & Devops", "Coordinated team sprint tasks, built backend policy code, wrote unit tests, presented intro.", "Active"],
                 ["2", TEAM_MEMBERS[1], "Lead Developer", "Model Preprocessing, SMOTE oversampling", "Configured imbalanced-learn pipeline, trained classifiers, presented training.", "Active"],
                 ["3", TEAM_MEMBERS[2], "Developer / Analyst", "Threshold Calibration, PR curve", "Swept Precision-Recall curve, calibrated model threshold, presented validation.", "Active"],
-                ["4", TEAM_MEMBERS[3], "UI Designer", "Frontend Input Board, Outcomes dashboard", "Designed Home & Results pages, integrated Dark CSS theme, presented demo.", "Active"],
-                ["5", TEAM_MEMBERS[4], "QA & Devops", "Unit Testing Suite, Render deployment", "Wrote test_app.py, set up Gunicorn, hosted server on Render, presented deployment.", "Active"]
+                ["4", TEAM_MEMBERS[3], "UI Designer", "Frontend Input Board, Outcomes dashboard, Render deployment", "Designed Home & Results pages, integrated Dark CSS theme, hosted server, presented demo.", "Active"]
             ],
             [30, 90, 80, 100, 180, 60]
         ),
