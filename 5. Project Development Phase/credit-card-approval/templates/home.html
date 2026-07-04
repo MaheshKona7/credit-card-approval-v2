@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Credit Card Approval System - Intelligent Screening Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <header>
+        <div class="header-container">
+            <a href="/" class="logo">
+                <i class="fa-solid fa-credit-card"></i>
+                <span>CreditCardAI</span>
+            </a>
+            <div style="font-size: 0.9rem; color: var(--text-secondary);">
+                <i class="fa-solid fa-shield-halved"></i> Secured Analytics Platform
+            </div>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <!-- Hero Section -->
+        <section class="hero">
+            <h1>Automated Credit Card Decisioning System</h1>
+            <p>
+                An intelligent underwriting platform that automates credit card decisions using advanced machine learning models trained on historical customer financial profiles and credit records.
+            </p>
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                <span class="back-btn" style="padding: 0.4rem 1rem; font-size: 0.85rem; border-color: rgba(99,102,241,0.3); pointer-events: none;">
+                    <i class="fa-solid fa-bolt"></i> Real-time Evaluation
+                </span>
+                <span class="back-btn" style="padding: 0.4rem 1rem; font-size: 0.85rem; border-color: rgba(16,185,129,0.3); pointer-events: none; color: var(--success-color);">
+                    <i class="fa-solid fa-circle-check"></i> Random Forest (Acc: 88.95%)
+                </span>
+            </div>
+        </section>
+
+        <!-- Tab Controls -->
+        <div class="tabs-navigation">
+            <button class="tab-btn active" onclick="switchTab('analytics')">
+                <i class="fa-solid fa-chart-line"></i> Analytics & Insights
+            </button>
+            <button class="tab-btn" onclick="switchTab('predict')">
+                <i class="fa-solid fa-user-plus"></i> New Application Screening
+            </button>
+        </div>
+
+        <!-- Tab 1: Analytics -->
+        <div id="analytics" class="tab-content active">
+            <!-- Model Performance Metrics Card -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-val">88.95%</div>
+                    <div class="stat-label">Model Accuracy</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-val">36,457</div>
+                    <div class="stat-label">Records Processed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-val">0.94</div>
+                    <div class="stat-label">Good Client F1-Score</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-val">4 Algorithms</div>
+                    <div class="stat-label">Evaluated</div>
+                </div>
+            </div>
+
+            <!-- EDA Visualization Plots -->
+            <h2 style="margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">Exploratory Data Analysis Insights</h2>
+            <div class="eda-grid">
+                <div class="eda-card">
+                    <h3>Approval Distribution</h3>
+                    <img src="{{ url_for('static', filename='images/approval_distribution.png') }}" alt="Credit approval distribution">
+                    <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.5rem;">
+                        Proportion of credit applications flagged as Good (Approved) vs High-Risk/Delinquent (Rejected) based on historical monthly status.
+                    </p>
+                </div>
+                <div class="eda-card">
+                    <h3>Income Density by Approval</h3>
+                    <img src="{{ url_for('static', filename='images/income_distribution.png') }}" alt="Annual income distribution">
+                    <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.5rem;">
+                        Kernel density estimate showing total annual income distribution (truncated at $500k) separated by credit decision outcomes.
+                    </p>
+                </div>
+                <div class="eda-card">
+                    <h3>Education Impact</h3>
+                    <img src="{{ url_for('static', filename='images/education_vs_approval.png') }}" alt="Education level vs approval status">
+                    <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.5rem;">
+                        Segmented count plot representing credit application outcomes across various academic qualifications.
+                    </p>
+                </div>
+                <div class="eda-card">
+                    <h3>Income Category Impact</h3>
+                    <img src="{{ url_for('static', filename='images/income_type_vs_approval.png') }}" alt="Income type vs approval status">
+                    <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.5rem;">
+                        Distribution of approvals/rejections across different types of income sources (Working, Commercial, State servant, Pensioner, Student).
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 2: Predict Form -->
+        <div id="predict" class="tab-content">
+            <div class="form-card">
+                <h2 style="margin-bottom: 1.5rem; text-align: center;">Applicant Eligibility Evaluation</h2>
+                <p style="color: var(--text-secondary); font-size: 0.95rem; text-align: center; margin-bottom: 2.5rem; max-width: 600px; margin-left: auto; margin-right: auto;">
+                    Provide applicant's demographic profile, financial records, and employment duration to compute credit approval recommendation instantly.
+                </p>
+
+                <form action="/predict" method="POST">
+                    <div class="form-grid">
+                        
+                        <!-- Gender -->
+                        <div class="form-group">
+                            <label for="gender">Applicant Gender</label>
+                            <select name="gender" id="gender" required>
+                                <option value="" disabled selected>Select gender</option>
+                                <option value="0">Female</option>
+                                <option value="1">Male</option>
+                            </select>
+                        </div>
+
+                        <!-- Own Car -->
+                        <div class="form-group">
+                            <label for="own_car">Owns a Car?</label>
+                            <select name="own_car" id="own_car" required>
+                                <option value="" disabled selected>Select option</option>
+                                <option value="1">Yes</option>
+                                <option value="0">No</option>
+                            </select>
+                        </div>
+
+                        <!-- Own Realty -->
+                        <div class="form-group">
+                            <label for="own_realty">Owns Real Estate / Realty?</label>
+                            <select name="own_realty" id="own_realty" required>
+                                <option value="" disabled selected>Select option</option>
+                                <option value="1">Yes</option>
+                                <option value="0">No</option>
+                            </select>
+                        </div>
+
+                        <!-- Income Type -->
+                        <div class="form-group">
+                            <label for="income_type">Income Source Type</label>
+                            <select name="income_type" id="income_type" required>
+                                <option value="" disabled selected>Select source</option>
+                                <option value="0">Working</option>
+                                <option value="1">Commercial Associate</option>
+                                <option value="2">Pensioner</option>
+                                <option value="3">State Servant</option>
+                                <option value="4">Student</option>
+                            </select>
+                        </div>
+
+                        <!-- Education Level -->
+                        <div class="form-group">
+                            <label for="education">Highest Education Level</label>
+                            <select name="education" id="education" required>
+                                <option value="" disabled selected>Select education</option>
+                                <option value="0">Higher Education</option>
+                                <option value="1">Secondary / Secondary Special</option>
+                                <option value="2">Incomplete Higher</option>
+                                <option value="3">Lower Secondary</option>
+                                <option value="4">Academic Degree</option>
+                            </select>
+                        </div>
+
+                        <!-- Family Status -->
+                        <div class="form-group">
+                            <label for="family_status">Marital / Family Status</label>
+                            <select name="family_status" id="family_status" required>
+                                <option value="" disabled selected>Select family status</option>
+                                <option value="0">Civil Marriage</option>
+                                <option value="1">Married</option>
+                                <option value="2">Single / Not Married</option>
+                                <option value="3">Separated</option>
+                                <option value="4">Widow</option>
+                            </select>
+                        </div>
+
+                        <!-- Housing Type -->
+                        <div class="form-group">
+                            <label for="housing_type">Current Housing Situation</label>
+                            <select name="housing_type" id="housing_type" required>
+                                <option value="" disabled selected>Select housing</option>
+                                <option value="1">House / Apartment</option>
+                                <option value="0">Rented Apartment</option>
+                                <option value="2">Municipal Apartment</option>
+                                <option value="3">With Parents</option>
+                                <option value="4">Co-op Apartment</option>
+                                <option value="5">Office Apartment</option>
+                            </select>
+                        </div>
+
+                        <!-- Occupation Type -->
+                        <div class="form-group">
+                            <label for="occupation">Occupation / Job Sector</label>
+                            <select name="occupation" id="occupation" required>
+                                <option value="" disabled selected>Select occupation</option>
+                                <option value="8">Laborers</option>
+                                <option value="14">Sales Staff</option>
+                                <option value="3">Core Staff</option>
+                                <option value="10">Managers</option>
+                                <option value="4">Drivers</option>
+                                <option value="0">Accountants</option>
+                                <option value="11">Medicine Staff</option>
+                                <option value="6">High Skill Tech Staff</option>
+                                <option value="16">Security Staff</option>
+                                <option value="2">Cooking Staff</option>
+                                <option value="1">Cleaning Staff</option>
+                                <option value="12">Private Service Staff</option>
+                                <option value="9">Low-Skill Laborers</option>
+                                <option value="15">Secretaries</option>
+                                <option value="17">Waiters / Barmen Staff</option>
+                                <option value="5">HR Staff</option>
+                                <option value="7">IT Staff</option>
+                                <option value="13">Realty Agents</option>
+                                <option value="18">Other / Unemployed / Unknown</option>
+                            </select>
+                        </div>
+
+                        <!-- Annual Income -->
+                        <div class="form-group">
+                            <label for="annual_income">Total Annual Income ($)</label>
+                            <input type="number" step="100" min="5000" max="10000000" name="annual_income" id="annual_income" placeholder="e.g. 55000" required>
+                        </div>
+
+                        <!-- Age -->
+                        <div class="form-group">
+                            <label for="age">Age (Years)</label>
+                            <input type="number" min="18" max="100" name="age" id="age" placeholder="e.g. 34" required>
+                        </div>
+
+                        <!-- Employment Duration -->
+                        <div class="form-group">
+                            <label for="employment_days">Employment Duration (Years)</label>
+                            <input type="number" min="0" max="60" name="employment_days" id="employment_days" placeholder="e.g. 8 (Enter 0 if Unemployed)" required>
+                        </div>
+
+                        <!-- Family Members -->
+                        <div class="form-group">
+                            <label for="family_members">Number of Family Members</label>
+                            <input type="number" min="1" max="20" name="family_members" id="family_members" placeholder="e.g. 3" required>
+                        </div>
+
+                    </div>
+
+                    <div class="btn-container">
+                        <button type="submit" class="submit-btn">
+                            <i class="fa-solid fa-magnifying-glass"></i> Evaluate Eligibility
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Credit Card Approval Prediction Project. Powered by Scikit-Learn & Flask.</p>
+    </footer>
+
+    <script>
+        function switchTab(tabId) {
+            // Remove active classes
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            // Add active classes
+            const activeBtn = Array.from(document.querySelectorAll('.tab-btn')).find(btn => btn.onclick.toString().includes(tabId));
+            if (activeBtn) activeBtn.classList.add('active');
+            
+            const targetContent = document.getElementById(tabId);
+            if (targetContent) targetContent.classList.add('active');
+        }
+    </script>
+</body>
+</html>
